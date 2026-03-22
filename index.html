@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<!-- 肿瘤风险评估与用药推荐系统 -->
+<!-- 版本：1.0.0 -->
+<!-- 日期：2026-03-22 -->
+<!-- 描述：基于基因表达量的肿瘤风险评估和用药推荐系统 -->
+<html lang="zh-CN">
+<head>
+    <!-- 字符编码设置 -->
+    <meta charset="UTF-8">
+    <!-- 响应式布局设置 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 页面标题 -->
+    <title>肿瘤风险评估与用药推荐系统</title>
+    <!-- 内部样式表 -->
+    <style>
+        /* CSS变量定义 */
+        :root {
+            /* 颜色变量 */
+            --primary-color: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --success-color: #10b981;
+            --success-light: #34d399;
+            --success-dark: #059669;
+            --danger-color: #dc2626;
+            --danger-light: #f87171;
+            --danger-dark: #b91c1c;
+            --warning-color: #f59e0b;
+            --warning-light: #fbbf24;
+            --warning-dark: #d97706;
+            --info-color: #3b82f6;
+            --info-light: #60a5fa;
+            --info-dark: #2563eb;
+            --background-color: #f0f9ff;
+            --background-light: #e0f2fe;
+            --card-background: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --border-dark: #cbd5e1;
+            
+            /* 字体变量 */
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-md: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 24px;
+            --font-size-2xl: 32px;
+            
+            /* 间距变量 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 40px;
+            --spacing-3xl: 50px;
+            
+            /* 边框圆角变量 */
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --border-radius-2xl: 24px;
+            
+            /* 阴影变量 */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-primary: 0 4px 16px rgba(59, 130, 246, 0.3);
+            
+            /* 过渡变量 */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.2s ease;
+            --transition-slow: 0.3s ease;
+        }
+
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 主体样式 */
+        body {
+            /* 字体设置 */
+            font-family: var(--font-family);
+            /* 背景渐变 */
+            background: linear-gradient(135deg, var(--background-color) 0%, var(--background-light) 100%);
+            /* 最小高度设置 */
+            min-height: 100vh;
+            /* 弹性布局 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 内边距 */
+            padding: var(--spacing-xl);
+            /* 文本渲染优化 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 容器样式 */
+        .container {
+            /* 最大宽度 */
+            max-width: 800px;
+            /* 宽度设置 */
+            width: 100%;
+            /* 响应式最大宽度 */
+            @media (max-width: 768px) {
+                max-width: 100%;
+            }
+        }
+
+        /* 头部徽章样式 */
+        .header-badge {
+            /* 文本对齐 */
+            text-align: center;
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-2xl);
+            /* 文本颜色 */
+            color: var(--primary-color);
+            /* 字体大小 */
+            font-size: var(--font-size-sm);
+            /* 字母间距 */
+            letter-spacing: 2px;
+            /* 文本转换 */
+            text-transform: uppercase;
+            /* 字体权重 */
+            font-weight: 600;
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 卡片样式 */
+        .card {
+            /* 背景颜色 */
+            background: var(--card-background);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-2xl);
+            /* 阴影效果 */
+            box-shadow: var(--shadow-lg);
+            /* 内边距 */
+            padding: var(--spacing-3xl) var(--spacing-2xl);
+            /* 定位设置 */
+            position: relative;
+            /* 溢出处理 */
+            overflow: hidden;
+            /* 背景模糊效果 */
+            backdrop-filter: blur(10px);
+            /* 过渡效果 */
+            transition: box-shadow var(--transition-normal);
+        }
+
+        /* 卡片悬停效果 */
+        .card:hover {
+            /* 阴影效果增强 */
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* 卡片顶部渐变条 */
+        .card::before {
+            /* 内容 */
+            content: '';
+            /* 定位设置 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            /* 高度 */
+            height: 4px;
+            /* 背景渐变 */
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        }
+
+        /* 语言切换容器 */
+        .lang-switch {
+            /* 弹性布局 */
+            display: flex;
+            /* 对齐方式 */
+            justify-content: flex-end;
+            /* 间距 */
+            gap: var(--spacing-md);
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        /* 语言切换按钮 */
+        .lang-btn {
+            /* 内边距 */
+            padding: var(--spacing-sm) var(--spacing-lg);
+            /* 边框 */
+            border: 1px solid var(--background-light);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-xl);
+            /* 背景颜色 */
+            background: white;
+            /* 文本颜色 */
+            color: var(--text-secondary);
+            /* 字体大小 */
+            font-size: var(--font-size-sm);
+            /* 光标样式 */
+            cursor: pointer;
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+            /* 字体权重 */
+            font-weight: 500;
+        }
+
+        /* 语言切换按钮悬停状态 */
+        .lang-btn:hover {
+            /* 边框颜色 */
+            border-color: var(--primary-light);
+            /* 文本颜色 */
+            color: var(--primary-color);
+        }
+
+        /* 激活状态的语言按钮 */
+        .lang-btn.active {
+            /* 背景渐变 */
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            /* 文本颜色 */
+            color: white;
+            /* 边框颜色 */
+            border-color: transparent;
+            /* 阴影效果 */
+            box-shadow: var(--shadow-primary);
+        }
+
+        /* 标题部分 */
+        .title-section {
+            /* 文本对齐 */
+            text-align: center;
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-3xl);
+        }
+
+        /* 图标容器 */
+        .icon {
+            /* 宽度 */
+            width: 72px;
+            /* 高度 */
+            height: 72px;
+            /* 外边距 */
+            margin: 0 auto var(--spacing-xl);
+            /* 背景渐变 */
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-xl);
+            /* 弹性布局 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 阴影效果 */
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+            /* 过渡效果 */
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        }
+
+        /* 图标容器悬停效果 */
+        .icon:hover {
+            /* 变换效果 */
+            transform: scale(1.05);
+            /* 阴影效果增强 */
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
+        }
+
+        /* 图标SVG */
+        .icon svg {
+            /* 宽度 */
+            width: 40px;
+            /* 高度 */
+            height: 40px;
+            /* 过渡效果 */
+            transition: transform var(--transition-normal);
+        }
+
+        /* 图标SVG悬停效果 */
+        .icon:hover svg {
+            /* 变换效果 */
+            transform: scale(1.1);
+        }
+
+        /* 标题文本 */
+        .title {
+            /* 字体大小 */
+            font-size: var(--font-size-2xl);
+            /* 字体权重 */
+            font-weight: 600;
+            /* 文本颜色 */
+            color: var(--text-primary);
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-md);
+            /* 行高 */
+            line-height: 1.2;
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 副标题文本 */
+        .subtitle {
+            /* 字体大小 */
+            font-size: var(--font-size-md);
+            /* 文本颜色 */
+            color: var(--text-secondary);
+            /* 字体权重 */
+            font-weight: 400;
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 表单部分 */
+        .form-section {
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        /* 表单组 */
+        .form-group {
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* 标签 */
+        .label {
+            /* 显示方式 */
+            display: block;
+            /* 字体大小 */
+            font-size: var(--font-size-sm);
+            /* 字体权重 */
+            font-weight: 600;
+            /* 文本颜色 */
+            color: #334155;
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-md);
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 选择输入框 */
+        .select-input {
+            /* 宽度 */
+            width: 100%;
+            /* 内边距 */
+            padding: var(--spacing-lg) var(--spacing-lg);
+            /* 边框 */
+            border: 1px solid var(--border-color);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-md);
+            /* 字体大小 */
+            font-size: var(--font-size-md);
+            /* 文本颜色 */
+            color: var(--text-primary);
+            /* 背景颜色 */
+            background: #f8fafc;
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+            /* 字体家族 */
+            font-family: var(--font-family);
+        }
+
+        /* 文本输入框 */
+        .text-input {
+            /* 宽度 */
+            width: 100%;
+            /* 内边距 */
+            padding: var(--spacing-lg) var(--spacing-lg);
+            /* 边框 */
+            border: 1px solid var(--border-color);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-md);
+            /* 字体大小 */
+            font-size: var(--font-size-md);
+            /* 文本颜色 */
+            color: var(--text-primary);
+            /* 背景颜色 */
+            background: #f8fafc;
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+            /* 字体家族 */
+            font-family: var(--font-family);
+        }
+
+        /* 输入框聚焦状态 */
+        .select-input:focus, .text-input:focus {
+            /* 轮廓 */
+            outline: none;
+            /* 边框颜色 */
+            border-color: var(--primary-color);
+            /* 背景颜色 */
+            background: white;
+            /* 阴影效果 */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        /* 输入框悬停状态 */
+        .select-input:hover, .text-input:hover {
+            /* 边框颜色 */
+            border-color: var(--primary-light);
+            /* 背景颜色 */
+            background: white;
+        }
+
+        /* 基因输入容器 */
+        .gene-inputs {
+            /* 网格布局 */
+            display: grid;
+            /* 列数和宽度 */
+            grid-template-columns: 1fr 1fr 1fr;
+            /* 间距 */
+            gap: var(--spacing-lg);
+            /* 响应式布局 */
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+        }
+
+        /* 单个基因输入 */
+        .gene-input {
+            /* 文本对齐 */
+            text-align: center;
+        }
+
+        /* 计算按钮 */
+        .calculate-btn {
+            /* 宽度 */
+            width: 100%;
+            /* 内边距 */
+            padding: var(--spacing-lg);
+            /* 背景渐变 */
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            /* 文本颜色 */
+            color: white;
+            /* 边框 */
+            border: none;
+            /* 边框圆角 */
+            border-radius: var(--border-radius-md);
+            /* 字体大小 */
+            font-size: var(--font-size-md);
+            /* 字体权重 */
+            font-weight: 600;
+            /* 光标样式 */
+            cursor: pointer;
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+            /* 阴影效果 */
+            box-shadow: var(--shadow-primary);
+            /* 字体家族 */
+            font-family: var(--font-family);
+            /* 文本对齐 */
+            text-align: center;
+            /* 文本转换 */
+            text-transform: none;
+        }
+
+        /* 计算按钮悬停状态 */
+        .calculate-btn:hover {
+            /* 变换效果 */
+            transform: translateY(-2px);
+            /* 阴影效果 */
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            /* 背景渐变 */
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        }
+
+        /* 计算按钮:active状态 */
+        .calculate-btn:active {
+            /* 变换效果 */
+            transform: translateY(0);
+            /* 阴影效果 */
+            box-shadow: var(--shadow-md);
+        }
+
+        /* 结果部分 */
+        .result-section {
+            /* 顶部外边距 */
+            margin-top: var(--spacing-2xl);
+            /* 内边距 */
+            padding: var(--spacing-xl);
+            /* 背景渐变 */
+            background: linear-gradient(135deg, var(--background-color) 0%, var(--background-light) 100%);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-lg);
+            /* 边框 */
+            border: 1px solid #bfdbfe;
+            /* 显示方式 */
+            display: none;
+            /* 阴影效果 */
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.05);
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+            /* 动画效果 */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* 结果部分显示动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 消息滑入动画 */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 消息滑出动画 */
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* 旋转动画 */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 脉冲动画 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* 呼吸动画 */
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* 摇摆动画 */
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* 放大缩小动画 */
+        @keyframes zoomInOut {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* 淡入淡出动画 */
+        @keyframes fadeInOut {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* 结果标题 */
+        .result-title {
+            /* 字体大小 */
+            font-size: var(--font-size-sm);
+            /* 字体权重 */
+            font-weight: 600;
+            /* 文本颜色 */
+            color: var(--primary-color);
+            /* 文本转换 */
+            text-transform: uppercase;
+            /* 字母间距 */
+            letter-spacing: 1px;
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-xl);
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 结果项 */
+        .result-item {
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* 结果标签 */
+        .result-label {
+            /* 字体大小 */
+            font-size: var(--font-size-xs);
+            /* 文本颜色 */
+            color: var(--text-secondary);
+            /* 底部外边距 */
+            margin-bottom: var(--spacing-xs);
+            /* 字体权重 */
+            font-weight: 500;
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 结果值 */
+        .result-value {
+            /* 字体大小 */
+            font-size: var(--font-size-lg);
+            /* 字体权重 */
+            font-weight: 600;
+            /* 文本颜色 */
+            color: var(--text-primary);
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 风险标签 */
+        .risk-badge {
+            /* 显示方式 */
+            display: inline-block;
+            /* 内边距 */
+            padding: var(--spacing-sm) var(--spacing-lg);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-2xl);
+            /* 字体大小 */
+            font-size: var(--font-size-sm);
+            /* 字体权重 */
+            font-weight: 600;
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+        }
+
+        /* 高风险标签 */
+        .risk-high {
+            /* 背景颜色 */
+            background: #fee2e2;
+            /* 文本颜色 */
+            color: var(--danger-color);
+            /* 边框 */
+            border: 1px solid #fecaca;
+        }
+
+        /* 高风险标签悬停效果 */
+        .risk-high:hover {
+            /* 背景颜色 */
+            background: #fef2f2;
+            /* 边框颜色 */
+            border-color: var(--danger-light);
+        }
+
+        /* 低风险标签 */
+        .risk-low {
+            /* 背景颜色 */
+            background: #dcfce7;
+            /* 文本颜色 */
+            color: var(--success-color);
+            /* 边框 */
+            border: 1px solid #bbf7d0;
+        }
+
+        /* 低风险标签悬停效果 */
+        .risk-low:hover {
+            /* 背景颜色 */
+            background: #ecfdf5;
+            /* 边框颜色 */
+            border-color: var(--success-light);
+        }
+
+        /* 药物列表 */
+        .drug-list {
+            /* 弹性布局 */
+            display: flex;
+            /* 换行 */
+            flex-wrap: wrap;
+            /* 间距 */
+            gap: var(--spacing-md);
+            /* 顶部外边距 */
+            margin-top: var(--spacing-md);
+        }
+
+        /* 药物项 */
+        .drug-item {
+            /* 内边距 */
+            padding: var(--spacing-sm) var(--spacing-md);
+            /* 背景颜色 */
+            background: white;
+            /* 边框 */
+            border: 1px solid var(--border-color);
+            /* 边框圆角 */
+            border-radius: var(--border-radius-sm);
+            /* 字体大小 */
+            font-size: var(--font-size-xs);
+            /* 文本颜色 */
+            color: #334155;
+            /* 阴影效果 */
+            box-shadow: var(--shadow-sm);
+            /* 过渡效果 */
+            transition: all var(--transition-normal);
+        }
+
+        /* 药物项悬停效果 */
+        .drug-item:hover {
+            /* 背景颜色 */
+            background: var(--background-light);
+            /* 边框颜色 */
+            border-color: var(--primary-light);
+            /* 阴影效果 */
+            box-shadow: var(--shadow-md);
+            /* 变换效果 */
+            transform: translateY(-1px);
+        }
+
+        /* 页脚注释 */
+        .footer-note {
+            /* 文本对齐 */
+            text-align: center;
+            /* 顶部外边距 */
+            margin-top: var(--spacing-2xl);
+            /* 字体大小 */
+            font-size: var(--font-size-xs);
+            /* 文本颜色 */
+            color: var(--text-muted);
+            /* 过渡效果 */
+            transition: color var(--transition-normal);
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            /* 主体样式 */
+            body {
+                /* 内边距 */
+                padding: var(--spacing-lg);
+            }
+
+            /* 卡片样式 */
+            .card {
+                /* 内边距 */
+                padding: var(--spacing-2xl) var(--spacing-md);
+            }
+
+            /* 标题文本 */
+            .title {
+                /* 字体大小 */
+                font-size: 28px;
+            }
+
+            /* 语言切换容器 */
+            .lang-switch {
+                /* 对齐方式 */
+                justify-content: center;
+            }
+
+            /* 基因输入容器 */
+            .gene-inputs {
+                /* 列数 */
+                grid-template-columns: 1fr;
+                /* 间距 */
+                gap: var(--spacing-md);
+            }
+
+            /* 结果部分 */
+            .result-section {
+                /* 内边距 */
+                padding: var(--spacing-lg);
+            }
+        }
+
+        /* 响应式布局 - 小屏幕 */
+        @media (max-width: 480px) {
+            /* 卡片样式 */
+            .card {
+                /* 内边距 */
+                padding: var(--spacing-xl) var(--spacing-md);
+            }
+
+            /* 标题文本 */
+            .title {
+                /* 字体大小 */
+                font-size: 24px;
+            }
+
+            /* 计算按钮 */
+            .calculate-btn {
+                /* 字体大小 */
+                font-size: var(--font-size-sm);
+                /* 内边距 */
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-badge">肿瘤风险评估 · Cancer Risk Assessment</div>
+        
+        <div class="card">
+            <div class="lang-switch">
+                <button id="zh-btn" class="lang-btn active">中文</button>
+                <button id="en-btn" class="lang-btn">English</button>
+            </div>
+
+            <div class="title-section">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 7H7V9H9V7Z" fill="#10b981"/>
+                        <path d="M17 7H15V9H17V7Z" fill="#10b981"/>
+                        <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="#3b82f6" stroke-width="2"/>
+                        <path d="M4 21C4 17.134 7.13401 14 11 14H13C16.866 14 20 17.134 20 21" stroke="#10b981" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h1 id="page-title" class="title">肿瘤风险评估与用药推荐系统</h1>
+                <p class="subtitle">Cancer Risk Assessment & Drug Recommendation System</p>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label id="tumor-type-label" class="label">肿瘤类型</label>
+                    <select id="tumor-type" class="select-input"></select>
+                </div>
+
+                <div class="form-group">
+                    <label id="gene-inputs-label" class="label">基因标准化表达量输入（多次测量取平均值）</label>
+                    <div class="gene-inputs">
+                        <div class="gene-input">
+                            <input type="number" id="gprc5b" class="text-input" step="any" placeholder="GPRC5B">
+                        </div>
+                        <div class="gene-input">
+                            <input type="number" id="lsamp" class="text-input" step="any" placeholder="LSAMP">
+                        </div>
+                        <div class="gene-input">
+                            <input type="number" id="pdgfra" class="text-input" step="any" placeholder="PDGFRA">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="calculate-btn" class="calculate-btn">确认计算 · Calculate</button>
+            </div>
+
+            <div id="result-section" class="result-section">
+                <div class="result-title" id="result-title">计算结果</div>
+                
+                <div class="result-item">
+                    <div class="result-label" id="selected-tumor-label">所选肿瘤类型</div>
+                    <div class="result-value" id="selected-tumor-value"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label" id="risk-group-label">风险分组</div>
+                    <div class="result-value" id="risk-group-value"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label" id="recommended-drugs-label">推荐用药（5种）</div>
+                    <div class="drug-list" id="recommended-drugs-list"></div>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                * 风险评分在后台计算，不对外展示；所有数据均预内置本地，无需联网
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据文件 -->
+    <script src="data.js"></script>
+    <!-- 主脚本 -->
+    <script>
+        /**
+         * 全局变量
+         */
+        let currentLang = 'zh';
+        
+        /**
+         * 语言切换按钮事件处理
+         */
+        function setupLanguageSwitch() {
+            // 中文按钮事件
+            document.getElementById('zh-btn').addEventListener('click', function() {
+                currentLang = 'zh';
+                updateLanguage();
+                this.classList.add('active');
+                document.getElementById('en-btn').classList.remove('active');
+            });
+            
+            // 英文按钮事件
+            document.getElementById('en-btn').addEventListener('click', function() {
+                currentLang = 'en';
+                updateLanguage();
+                this.classList.add('active');
+                document.getElementById('zh-btn').classList.remove('active');
+            });
+        }
+        
+        /**
+         * 初始化肿瘤类型下拉框
+         */
+        function initTumorTypes() {
+            const tumorTypeSelect = document.getElementById('tumor-type');
+            // 清空下拉框
+            tumorTypeSelect.innerHTML = '';
+            
+            // 添加默认选项
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = currentLang === 'zh' ? '请选择肿瘤类型' : 'Please select tumor type';
+            tumorTypeSelect.appendChild(option);
+            
+            // 遍历肿瘤类型数据
+            for (const [code, data] of Object.entries(riskDrugData[currentLang])) {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = data.cancer_type;
+                tumorTypeSelect.appendChild(option);
+            }
+        }
+        
+        /**
+         * 更新页面语言
+         */
+        function updateLanguage() {
+            // 更新页面标题
+            document.getElementById('page-title').textContent = currentLang === 'zh' ? '肿瘤风险评估与用药推荐系统' : 'Cancer Risk Assessment & Drug Recommendation System';
+            
+            // 更新表单标签
+            document.getElementById('tumor-type-label').textContent = currentLang === 'zh' ? '肿瘤类型' : 'Tumor Type';
+            document.getElementById('gene-inputs-label').textContent = currentLang === 'zh' ? '基因标准化表达量输入（多次测量取平均值）' : 'Gene Normalized Expression Input (Take average of multiple measurements)';
+            
+            // 更新按钮文本
+            document.getElementById('calculate-btn').textContent = currentLang === 'zh' ? '确认计算 · Calculate' : 'Calculate · 确认计算';
+            
+            // 更新结果标题
+            document.getElementById('result-title').textContent = currentLang === 'zh' ? '计算结果' : 'Calculation Result';
+            
+            // 更新结果标签
+            document.getElementById('selected-tumor-label').textContent = currentLang === 'zh' ? '所选肿瘤类型' : 'Selected Tumor Type';
+            document.getElementById('risk-group-label').textContent = currentLang === 'zh' ? '风险分组' : 'Risk Group';
+            document.getElementById('recommended-drugs-label').textContent = currentLang === 'zh' ? '推荐用药（5种）' : 'Recommended Drugs (5)';
+            
+            // 重新初始化肿瘤类型下拉框
+            initTumorTypes();
+        }
+        
+        /**
+         * 验证用户输入
+         * @param {string} tumorType - 肿瘤类型
+         * @param {number} gprc5b - GPRC5B基因表达量
+         * @param {number} lsamp - LSAMP基因表达量
+         * @param {number} pdgfra - PDGFRA基因表达量
+         * @returns {boolean} - 验证结果
+         */
+        function validateInput(tumorType, gprc5b, lsamp, pdgfra) {
+            // 验证肿瘤类型
+            if (!tumorType || tumorType === '') {
+                showMessage(currentLang === 'zh' ? '请选择肿瘤类型' : 'Please select tumor type', 'error');
+                return false;
+            }
+            
+            // 验证基因表达量
+            if (isNaN(gprc5b) || !isFinite(gprc5b)) {
+                showMessage(currentLang === 'zh' ? '请输入有效的GPRC5B基因表达量' : 'Please enter valid GPRC5B gene expression', 'error');
+                return false;
+            }
+            
+            if (isNaN(lsamp) || !isFinite(lsamp)) {
+                showMessage(currentLang === 'zh' ? '请输入有效的LSAMP基因表达量' : 'Please enter valid LSAMP gene expression', 'error');
+                return false;
+            }
+            
+            if (isNaN(pdgfra) || !isFinite(pdgfra)) {
+                showMessage(currentLang === 'zh' ? '请输入有效的PDGFRA基因表达量' : 'Please enter valid PDGFRA gene expression', 'error');
+                return false;
+            }
+            
+            // 验证数值范围（假设基因表达量应该是正数）
+            if (gprc5b < 0) {
+                showMessage(currentLang === 'zh' ? 'GPRC5B基因表达量不能为负数' : 'GPRC5B gene expression cannot be negative', 'error');
+                return false;
+            }
+            
+            if (lsamp < 0) {
+                showMessage(currentLang === 'zh' ? 'LSAMP基因表达量不能为负数' : 'LSAMP gene expression cannot be negative', 'error');
+                return false;
+            }
+            
+            if (pdgfra < 0) {
+                showMessage(currentLang === 'zh' ? 'PDGFRA基因表达量不能为负数' : 'PDGFRA gene expression cannot be negative', 'error');
+                return false;
+            }
+            
+            // 验证数值大小（避免输入过大的数值）
+            const maxValue = 10000;
+            if (gprc5b > maxValue) {
+                showMessage(currentLang === 'zh' ? 'GPRC5B基因表达量数值过大' : 'GPRC5B gene expression value is too large', 'error');
+                return false;
+            }
+            
+            if (lsamp > maxValue) {
+                showMessage(currentLang === 'zh' ? 'LSAMP基因表达量数值过大' : 'LSAMP gene expression value is too large', 'error');
+                return false;
+            }
+            
+            if (pdgfra > maxValue) {
+                showMessage(currentLang === 'zh' ? 'PDGFRA基因表达量数值过大' : 'PDGFRA gene expression value is too large', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        /**
+         * 计算风险评分
+         * @param {Object} tumorData - 肿瘤数据
+         * @param {number} gprc5b - GPRC5B基因表达量
+         * @param {number} lsamp - LSAMP基因表达量
+         * @param {number} pdgfra - PDGFRA基因表达量
+         * @returns {number} - 风险评分
+         */
+        function calculateRiskScore(tumorData, gprc5b, lsamp, pdgfra) {
+            return (
+                gprc5b * tumorData.GPRC5B_coeff +
+                lsamp * tumorData.LSAMP_coeff +
+                pdgfra * tumorData.PDGFRA_coeff
+            );
+        }
+        
+        /**
+         * 判定风险分组
+         * @param {number} riskScore - 风险评分
+         * @param {number} threshold - 阈值
+         * @returns {Object} - 风险分组信息
+         */
+        function determineRiskGroup(riskScore, threshold) {
+            const isHighRisk = riskScore > threshold;
+            const riskGroup = isHighRisk ? 
+                (currentLang === 'zh' ? '高风险组' : 'High-Risk Group') : 
+                (currentLang === 'zh' ? '低风险组' : 'Low-Risk Group');
+            
+            return {
+                isHighRisk: isHighRisk,
+                riskGroup: riskGroup
+            };
+        }
+        
+        /**
+         * 获取推荐药物
+         * @param {Object} tumorData - 肿瘤数据
+         * @param {boolean} isHighRisk - 是否高风险
+         * @returns {Array} - 推荐药物列表
+         */
+        function getRecommendedDrugs(tumorData, isHighRisk) {
+            return isHighRisk ? tumorData.high_risk_drugs : tumorData.low_risk_drugs;
+        }
+        
+        /**
+         * 显示计算结果
+         * @param {Object} tumorData - 肿瘤数据
+         * @param {Object} riskInfo - 风险信息
+         * @param {Array} drugs - 推荐药物
+         */
+        function displayResults(tumorData, riskInfo, drugs) {
+            // 显示所选肿瘤类型
+            document.getElementById('selected-tumor-value').textContent = tumorData.cancer_type;
+            
+            // 显示风险分组
+            const riskGroupValue = document.getElementById('risk-group-value');
+            riskGroupValue.innerHTML = `<span class="risk-badge ${riskInfo.isHighRisk ? 'risk-high' : 'risk-low'}">${riskInfo.riskGroup}</span>`;
+            
+            // 显示推荐药物
+            const drugsList = document.getElementById('recommended-drugs-list');
+            drugsList.innerHTML = '';
+            drugs.forEach(drug => {
+                const span = document.createElement('span');
+                span.className = 'drug-item';
+                span.textContent = drug;
+                drugsList.appendChild(span);
+            });
+            
+            // 显示结果区域
+            document.getElementById('result-section').style.display = 'block';
+        }
+        
+        /**
+         * 计算按钮事件处理
+         */
+        function setupCalculateButton() {
+            document.getElementById('calculate-btn').addEventListener('click', function() {
+                // 显示加载动画
+                showLoading('正在计算风险评估结果...');
+                
+                // 模拟计算延迟，提升用户体验
+                setTimeout(() => {
+                    try {
+                        // 获取用户输入
+                        const tumorType = document.getElementById('tumor-type').value;
+                        const gprc5b = parseFloat(document.getElementById('gprc5b').value);
+                        const lsamp = parseFloat(document.getElementById('lsamp').value);
+                        const pdgfra = parseFloat(document.getElementById('pdgfra').value);
+                        
+                        // 验证输入
+                        if (!validateInput(tumorType, gprc5b, lsamp, pdgfra)) {
+                            hideLoading();
+                            return;
+                        }
+                        
+                        // 获取肿瘤数据
+                        const tumorData = riskDrugData[currentLang][tumorType];
+                        
+                        // 计算风险评分
+                        const riskScore = calculateRiskScore(tumorData, gprc5b, lsamp, pdgfra);
+                        
+                        // 判定风险分组
+                        const riskInfo = determineRiskGroup(riskScore, tumorData.threshold);
+                        
+                        // 获取推荐药物
+                        const drugs = getRecommendedDrugs(tumorData, riskInfo.isHighRisk);
+                        
+                        // 显示结果
+                        displayResults(tumorData, riskInfo, drugs);
+                        
+                        // 显示成功消息
+                        showMessage('计算完成！', 'success');
+                    } catch (error) {
+                        // 显示错误消息
+                        showMessage('计算过程中出现错误，请重试', 'error');
+                        console.error('计算错误:', error);
+                    } finally {
+                        // 隐藏加载动画
+                        hideLoading();
+                    }
+                }, 800); // 800ms延迟，模拟计算过程
+            });
+        }
+        
+        /**
+         * 初始化应用
+         */
+        function init() {
+            // 设置语言切换
+            setupLanguageSwitch();
+            // 初始化肿瘤类型下拉框
+            initTumorTypes();
+            // 设置计算按钮事件
+            setupCalculateButton();
+        }
+        
+        /**
+         * 页面加载完成后初始化
+         */
+        window.addEventListener('DOMContentLoaded', init);
+        
+        /**
+         * 工具函数：格式化数字
+         * @param {number} num - 数字
+         * @param {number} decimals - 小数位数
+         * @returns {string} - 格式化后的数字
+         */
+        function formatNumber(num, decimals = 2) {
+            // 验证输入类型
+            if (typeof num !== 'number' || isNaN(num)) {
+                return '0.00';
+            }
+            return num.toFixed(decimals);
+        }
+        
+        /**
+         * 工具函数：获取当前时间
+         * @returns {string} - 当前时间字符串
+         */
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        /**
+         * 工具函数：显示加载动画
+         * @param {string} message - 加载消息
+         */
+        function showLoading(message = '计算中...') {
+            // 创建加载动画元素
+            const loading = document.createElement('div');
+            loading.id = 'loading';
+            loading.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.8);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                font-size: 16px;
+                color: #3b82f6;
+            `;
+            
+            // 创建加载图标
+            const loadingIcon = document.createElement('div');
+            loadingIcon.style.cssText = `
+                width: 40px;
+                height: 40px;
+                border: 4px solid #e0f2fe;
+                border-top: 4px solid #3b82f6;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 16px;
+            `;
+            
+            // 创建加载文本
+            const loadingText = document.createElement('div');
+            loadingText.textContent = message;
+            
+            // 添加到加载容器
+            loading.appendChild(loadingIcon);
+            loading.appendChild(loadingText);
+            document.body.appendChild(loading);
+        }
+        
+        /**
+         * 工具函数：隐藏加载动画
+         */
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                // 添加淡出动画
+                loading.style.transition = 'opacity 0.3s ease';
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.remove();
+                }, 300);
+            }
+        }
+        
+        /**
+         * 工具函数：显示消息提示
+         * @param {string} message - 消息内容
+         * @param {string} type - 消息类型：success, error, info
+         * @param {number} duration - 显示时长（毫秒）
+         */
+        function showMessage(message, type = 'info', duration = 3000) {
+            // 创建消息元素
+            const messageElement = document.createElement('div');
+            messageElement.className = `message message-${type}`;
+            messageElement.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                border-radius: 8px;
+                color: white;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 1001;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            `;
+            
+            // 设置不同类型的消息样式
+            switch (type) {
+                case 'success':
+                    messageElement.style.background = '#10b981';
+                    break;
+                case 'error':
+                    messageElement.style.background = '#dc2626';
+                    break;
+                case 'info':
+                default:
+                    messageElement.style.background = '#3b82f6';
+                    break;
+            }
+            
+            messageElement.textContent = message;
+            document.body.appendChild(messageElement);
+            
+            // 自动关闭
+            setTimeout(() => {
+                messageElement.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    messageElement.remove();
+                }, 300);
+            }, duration);
+        }
+        
+        /**
+         * 工具函数：验证数字输入
+         * @param {string|number} value - 输入值
+         * @returns {boolean} - 是否为有效数字
+         */
+        function isValidNumber(value) {
+            const num = parseFloat(value);
+            return !isNaN(num) && isFinite(num);
+        }
+        
+        /**
+         * 工具函数：获取元素
+         * @param {string} selector - 选择器
+         * @returns {Element|null} - DOM元素
+         */
+        function getElement(selector) {
+            return document.querySelector(selector);
+        }
+        
+        /**
+         * 工具函数：获取元素值
+         * @param {string} selector - 选择器
+         * @returns {string} - 元素值
+         */
+        function getElementValue(selector) {
+            const element = getElement(selector);
+            return element ? element.value : '';
+        }
+        
+        /**
+         * 工具函数：设置元素值
+         * @param {string} selector - 选择器
+         * @param {string} value - 要设置的值
+         */
+        function setElementValue(selector, value) {
+            const element = getElement(selector);
+            if (element) {
+                element.value = value;
+            }
+        }
+        
+        /**
+         * 工具函数：设置元素文本
+         * @param {string} selector - 选择器
+         * @param {string} text - 要设置的文本
+         */
+        function setElementText(selector, text) {
+            const element = getElement(selector);
+            if (element) {
+                element.textContent = text;
+            }
+        }
+        
+        /**
+         * 工具函数：显示元素
+         * @param {string} selector - 选择器
+         */
+        function showElement(selector) {
+            const element = getElement(selector);
+            if (element) {
+                element.style.display = 'block';
+            }
+        }
+        
+        /**
+         * 工具函数：隐藏元素
+         * @param {string} selector - 选择器
+         */
+        function hideElement(selector) {
+            const element = getElement(selector);
+            if (element) {
+                element.style.display = 'none';
+            }
+        }
+        
+        /**
+         * 工具函数：添加类
+         * @param {string} selector - 选择器
+         * @param {string} className - 类名
+         */
+        function addClass(selector, className) {
+            const element = getElement(selector);
+            if (element) {
+                element.classList.add(className);
+            }
+        }
+        
+        /**
+         * 工具函数：移除类
+         * @param {string} selector - 选择器
+         * @param {string} className - 类名
+         */
+        function removeClass(selector, className) {
+            const element = getElement(selector);
+            if (element) {
+                element.classList.remove(className);
+            }
+        }
+        
+        /**
+         * 工具函数：切换类
+         * @param {string} selector - 选择器
+         * @param {string} className - 类名
+         */
+        function toggleClass(selector, className) {
+            const element = getElement(selector);
+            if (element) {
+                element.classList.toggle(className);
+            }
+        }
+        
+        /**
+         * 工具函数：深度复制对象
+         * @param {Object} obj - 要复制的对象
+         * @returns {Object} - 复制后的对象
+         */
+        function deepClone(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        }
+        
+        /**
+         * 工具函数：防抖
+         * @param {Function} func - 要执行的函数
+         * @param {number} wait - 等待时间（毫秒）
+         * @returns {Function} - 防抖后的函数
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+        
+        /**
+         * 工具函数：节流
+         * @param {Function} func - 要执行的函数
+         * @param {number} limit - 时间限制（毫秒）
+         * @returns {Function} - 节流后的函数
+         */
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => {
+                        inThrottle = false;
+                    }, limit);
+                }
+            };
+        }
+        
+
+        
+        /**
+         * 功能：添加页面加载动画
+         */
+        function addPageLoadingAnimation() {
+            // 创建页面加载动画
+            const loadingScreen = document.createElement('div');
+            loadingScreen.id = 'page-loading';
+            loadingScreen.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                transition: opacity 0.5s ease;
+            `;
+            
+            // 添加加载图标
+            const loadingIcon = document.createElement('div');
+            loadingIcon.style.cssText = `
+                width: 60px;
+                height: 60px;
+                border: 4px solid #bfdbfe;
+                border-top: 4px solid #3b82f6;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            `;
+            
+            // 添加加载文本
+            const loadingText = document.createElement('div');
+            loadingText.textContent = currentLang === 'zh' ? '系统加载中...' : 'Loading...';
+            loadingText.style.cssText = `
+                font-size: 16px;
+                color: #3b82f6;
+                font-weight: 500;
+            `;
+            
+            // 添加动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            loadingScreen.appendChild(loadingIcon);
+            loadingScreen.appendChild(loadingText);
+            document.body.appendChild(loadingScreen);
+            
+            // 页面加载完成后隐藏加载动画
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(function() {
+                        loadingScreen.remove();
+                    }, 500);
+                }, 1000);
+            });
+        }
+        
+        // 添加页面加载动画
+        addPageLoadingAnimation();
+        
+        /**
+         * 功能：添加键盘快捷键
+         */
+        function addKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + Enter: 计算
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('calculate-btn').click();
+                }
+                
+                // Esc: 清空输入
+                if (e.key === 'Escape') {
+                    document.getElementById('tumor-type').value = '';
+                    document.getElementById('gprc5b').value = '';
+                    document.getElementById('lsamp').value = '';
+                    document.getElementById('pdgfra').value = '';
+                    document.getElementById('result-section').style.display = 'none';
+                }
+            });
+        }
+        
+        // 添加键盘快捷键
+        addKeyboardShortcuts();
+        
+        /**
+         * 功能：添加输入验证和提示
+         */
+        function addInputValidation() {
+            const inputs = document.querySelectorAll('.text-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // 只允许输入数字和小数点
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                    // 确保只有一个小数点
+                    const parts = this.value.split('.');
+                    if (parts.length > 2) {
+                        this.value = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                });
+                
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = '#3b82f6';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.style.borderColor = '#e2e8f0';
+                });
+            });
+        }
+        
+        // 添加输入验证
+        addInputValidation();
+    </script>
+</body>
+</html>
